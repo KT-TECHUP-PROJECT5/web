@@ -1,0 +1,27 @@
+# Secure PR Gate caller — Trivy/SBOM CI smoke on vulnerable web app
+# Points at secure_gate feature/trivy-sbom (pre-merge validation).
+# DT secrets are intentionally unset → upload step skips (not-configured).
+
+name: Secure PR Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  security-events: write
+
+jobs:
+  secure-pr-gate:
+    uses: KT-TECHUP-PROJECT5/secure_gate/.github/workflows/pr-security-gate.yml@feature/trivy-sbom
+    with:
+      gate_repository: KT-TECHUP-PROJECT5/secure_gate
+      gate_ref: feature/trivy-sbom
+      enable_dast: false
+    secrets: inherit
