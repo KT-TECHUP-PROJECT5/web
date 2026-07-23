@@ -3,41 +3,26 @@
 {% block content %}
 <div class="page-heading row-heading">
     <div>
+        <span class="eyebrow">MY SPACE</span>
         <h1>내 게시글</h1>
         <p>내가 작성한 공개 글과 비공개 글을 모아볼 수 있습니다.</p>
     </div>
-    <a class="button" href="/posts/new">글쓰기</a>
+    <a class="button" href="/posts/new">새 글 작성</a>
 </div>
-<section class="panel board-panel">
-    {% if posts %}
-    <div class="board-table-wrap">
-        <table class="board-table">
-            <thead>
-                <tr>
-                    <th class="col-number">번호</th>
-                    <th>제목</th>
-                    <th class="col-status">상태</th>
-                    <th class="col-date">작성일</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for post in posts %}
-                <tr>
-                    <td class="col-number">{{ post.id }}</td>
-                    <td class="title-cell">
-                        <a href="{% if post.is_private %}/posts/private/{{ post.id }}{% else %}/posts/{{ post.id }}{% endif %}">
-                            <span>{{ post.title }}</span>
-                        </a>
-                    </td>
-                    <td class="col-status"><span class="visibility-badge {% if post.is_private %}private{% endif %}">{% if post.is_private %}비공개{% else %}공개{% endif %}</span></td>
-                    <td class="col-date">{{ post.created_at.strftime('%Y.%m.%d') }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% else %}
+<section class="panel">
+    <div class="post-list">
+        {% for post in posts %}
+        <a class="post-row" href="{% if post.is_private %}/posts/private/{{ post.id }}{% else %}/posts/{{ post.id }}{% endif %}">
+            <span class="visibility-badge {% if post.is_private %}private{% endif %}">{% if post.is_private %}비공개{% else %}공개{% endif %}</span>
+            <span class="post-main">
+                <strong>{{ post.title }}</strong>
+                <small>{{ post.created_at.strftime('%Y.%m.%d %H:%M') }}</small>
+            </span>
+            <span class="row-arrow">→</span>
+        </a>
+        {% else %}
         <div class="empty-state"><strong>작성한 글이 없습니다.</strong></div>
-    {% endif %}
+        {% endfor %}
+    </div>
 </section>
 {% endblock %}

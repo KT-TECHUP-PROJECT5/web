@@ -21,6 +21,3 @@ class User(Base):
     uploads: Mapped[list["UploadFileRecord"]] = relationship(  # noqa: F821
         back_populates="user"
     )
-    challenge_submissions: Mapped[list["ChallengeSubmission"]] = relationship(  # noqa: F821
-        back_populates="user"
-    )

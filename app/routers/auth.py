@@ -31,8 +31,6 @@ def register_submit(
 ):
     # 실습을 위해 비밀번호 복잡도 정책을 적용하지 않았습니다.
     # 운영 환경에서는 최소 길이, 복잡도, 유출 비밀번호 차단 정책이 필요합니다.
-    if len(password) <= 4:
-        request.session["lab_flag"] = "flag{weak_password_allowed}"
     try:
         db.add(User(username=username, password=password, nickname=nickname, role="user"))
         db.commit()
@@ -71,8 +69,6 @@ def login_submit(
     request.session["user_id"] = user["id"]
     request.session["username"] = user["username"]
     request.session["role"] = user["role"]
-    if any(token in username.lower() for token in (" or ", "'or", "' or", "--")):
-        request.session["lab_flag"] = "flag{sqli_login_bypass}"
     return RedirectResponse(url="/posts", status_code=303)
 
 
