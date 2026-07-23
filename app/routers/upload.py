@@ -66,6 +66,8 @@ def upload_file(
     # 별도 보안 이벤트 로그도 남기지 않아 위험 확장자 업로드가 탐지되지 않습니다.
     with destination.open("wb") as output:
         shutil.copyfileobj(file.file, output)
+    if suffix.lower() in {".html", ".svg", ".php", ".js"}:
+        request.session["lab_flag"] = "flag{upload_without_guardrails}"
 
     record = UploadFileRecord(
         user_id=user.id,

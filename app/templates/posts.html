@@ -1,50 +1,99 @@
 {% extends "base.html" %}
-{% block title %}커뮤니티 · 모아{% endblock %}
+{% block title %}게시판 · 모아{% endblock %}
 {% block content %}
-<section class="hero">
+<section class="board-hero">
     <div>
-        <span class="eyebrow">MOA COMMUNITY</span>
-        <h1>오늘의 이야기를<br>가볍게 나눠보세요.</h1>
-        <p>관심사와 일상, 유용한 정보를 이웃들과 함께 나누는 공간입니다.</p>
+        <span class="eyebrow">MOA BOARD</span>
+        <h1>모아 게시판</h1>
+        <p>일상, 정보, 질문을 가볍게 남기고 함께 확인하는 공간입니다.</p>
     </div>
-    {% if user %}
-    <a class="button" href="/posts/new">새 글 작성</a>
-    {% else %}
-    <a class="button" href="/login">로그인하고 참여하기</a>
-    {% endif %}
 </section>
 
-<section class="panel board-panel">
-    <div class="section-head">
-        <div>
-            <span class="section-kicker">BOARD</span>
-            <h2>최근 게시글</h2>
+<div class="board-layout">
+    <section class="panel board-panel">
+        <div class="board-toolbar">
+            <div class="board-summary">
+                <strong>전체 글</strong>
+                <span>{{ posts|length }}개</span>
+            </div>
+            <form method="get" action="/posts" class="search-form">
+                <input type="search" name="keyword" value="{{ keyword or '' }}" placeholder="제목 또는 내용을 검색하세요" aria-label="게시글 검색">
+                <button class="search-button" type="submit">검색</button>
+            </form>
         </div>
-        <form method="get" action="/posts" class="search-form">
-            <input type="search" name="keyword" value="{{ keyword or '' }}" placeholder="게시글 검색" aria-label="게시글 검색">
-            <button class="search-button" type="submit">검색</button>
-        </form>
-    </div>
-    {% if keyword %}
-    <!-- LAB: 검색어 Reflected XSS 확인을 위해 escape를 비활성화한 출력 지점 -->
-    <p class="search-result"><strong>{{ keyword | safe }}</strong> 검색 결과</p>
-    {% endif %}
-    <div class="post-list">
-        {% for post in posts %}
-        <a class="post-row" href="{% if post.is_private %}/posts/private/{{ post.id }}{% else %}/posts/{{ post.id }}{% endif %}">
-            <span class="post-number">{{ post.id }}</span>
-            <span class="post-main">
-                <strong>{{ post.title }}</strong>
-                <small>{{ post.author }} · {{ post.created_at.strftime('%Y.%m.%d %H:%M') }}</small>
-            </span>
-            <span class="row-arrow">→</span>
-        </a>
+
+        {% if keyword %}
+        <!-- LAB: 검색어 Reflected XSS 확인을 위해 escape를 비활성화한 출력 지점 -->
+        <p class="search-result"><strong>{{ keyword | safe }}</strong> 검색 결과</p>
+        {% if "<script" in keyword|lower %}<p class="search-result"><code>flag{reflected_search_xss}</code></p>{% endif %}
+        {% endif %}
+
+        {% if posts %}
+        <div class="board-table-wrap">
+            <table class="board-table">
+                <thead>
+                    <tr>
+                        <th class="col-number">번호</th>
+                        <th>제목</th>
+                        <th class="col-author">작성자</th>
+                        <th class="col-date">작성일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in posts %}
+                    <tr>
+                        <td class="col-number">{{ post.id }}</td>
+                        <td class="title-cell">
+                            <a href="{% if post.is_private %}/posts/private/{{ post.id }}{% else %}/posts/{{ post.id }}{% endif %}">
+                                {% if post.is_private %}<span class="visibility-badge private">비공개</span>{% endif %}
+                                <span>{{ post.title }}</span>
+                            </a>
+                        </td>
+                        <td class="col-author">{{ post.author }}</td>
+                        <td class="col-date">
+                            {% if post.created_at is string %}
+                            {{ post.created_at }}
+                            {% else %}
+                            {{ post.created_at.strftime('%Y.%m.%d') }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% else %}
-        <div class="empty-state">
-            <strong>아직 게시글이 없습니다.</strong>
-            <p>첫 번째 이야기를 남겨보세요.</p>
-        </div>
-        {% endfor %}
-    </div>
-</section>
+            <div class="empty-state">
+                <strong>아직 게시글이 없습니다.</strong>
+                <p>첫 번째 이야기를 남겨보세요.</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <aside class="side-stack">
+        <section class="side-card primary-side-card">
+            {% if user %}
+            <strong>{{ user.nickname }}님</strong>
+            <p>새 글을 작성하거나 내가 쓴 글을 확인할 수 있습니다.</p>
+            <div class="side-actions">
+                <a class="button button-full" href="/posts/new">글쓰기</a>
+                <a class="button button-ghost button-full" href="/posts/mine">내 게시글</a>
+            </div>
+            {% else %}
+            <strong>모아에 참여해보세요</strong>
+            <p>로그인하면 글 작성과 자료실 이용이 가능합니다.</p>
+            <div class="side-actions">
+                <a class="button button-full" href="/login">로그인</a>
+                <a class="button button-ghost button-full" href="/register">회원가입</a>
+            </div>
+            {% endif %}
+        </section>
+
+        <section class="side-card">
+            <h2>바로가기</h2>
+            <a class="quick-link" href="/upload"><span>자료실</span><small>공유 파일 보기</small></a>
+            <a class="quick-link" href="/posts"><span>게시판</span><small>전체 글 보기</small></a>
+        </section>
+    </aside>
+</div>
 {% endblock %}

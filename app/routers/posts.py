@@ -170,4 +170,5 @@ def delete_post(request: Request, post_id: int, db: Session = Depends(get_db)):
     db.execute(delete(Comment).where(Comment.post_id == post_id))
     db.execute(delete(Post).where(Post.id == post_id))
     db.commit()
+    request.session["lab_flag"] = "flag{delete_without_owner_check}"
     return RedirectResponse(url="/admin", status_code=303)

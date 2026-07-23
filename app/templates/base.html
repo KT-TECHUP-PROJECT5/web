@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block title %}모아 커뮤니티{% endblock %}</title>
-    <link rel="stylesheet" href="/static/style.css?v=20260706-2">
+    <title>{% block title %}모아{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css?v=20260720-7">
 </head>
 <body>
     <header class="site-header">
@@ -14,7 +14,9 @@
                 <span>모아</span>
             </a>
             <nav class="main-nav" aria-label="주요 메뉴">
-                <a href="/posts">커뮤니티</a>
+                <a href="/arena">훈련장</a>
+                <a href="/arena/scoreboard">점수판</a>
+                <a href="/posts">게시판</a>
                 <a href="/upload">자료실</a>
                 {% if user %}<a href="/posts/mine">내 게시글</a>{% endif %}
             </nav>
@@ -31,10 +33,13 @@
         </div>
     </header>
     <main class="page-shell">
+        {% if request.session.get("lab_flag") %}
+        <div class="lab-flag-banner">
+            <strong>실습 플래그 발견</strong>
+            <code>{{ request.session.pop("lab_flag") }}</code>
+        </div>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
-    <footer class="site-footer">
-        <p>모아 커뮤니티 · 서로의 일상과 생각을 나누는 공간</p>
-    </footer>
 </body>
 </html>

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}훈련장 · 모아{% endblock %}
+{% block content %}
+<section class="arena-hero">
+    <div>
+        <span class="eyebrow">BUG BOUNTY ARENA</span>
+        <h1>취약점을 찾고 플래그를 제출하세요</h1>
+        <p>OWASP Top 10을 기반으로 만든 실습형 모의해킹 챌린지입니다. 허가된 로컬 환경에서만 진행하세요.</p>
+    </div>
+    <a class="button" href="/arena/scoreboard">점수판 보기</a>
+</section>
+
+<div class="arena-layout">
+    <section class="challenge-board">
+        {% for category in categories %}
+        <div class="category-block">
+            <div class="section-head compact">
+                <div>
+                    <span class="section-kicker">{{ category }}</span>
+                    <h2>{{ category }} 챌린지</h2>
+                </div>
+            </div>
+            <div class="challenge-grid">
+                {% for challenge in challenges if challenge.category == category %}
+                <article class="challenge-card {% if challenge.id in solved_ids %}solved{% endif %}">
+                    <div class="challenge-topline">
+                        <span class="difficulty difficulty-{{ challenge.difficulty }}">{{ challenge.difficulty }}</span>
+                        <strong>{{ challenge.points }} pts</strong>
+                    </div>
+                    <h3>{{ challenge.title }}</h3>
+                    <p>{{ challenge.brief }}</p>
+                    <a class="target-link" href="{{ challenge.target_path }}">{{ challenge.target_path }}</a>
+                    <small>{{ challenge.bounty_note }}</small>
+                    {% if user %}
+                    <form method="post" action="/arena/submit" class="flag-form">
+                        <input type="hidden" name="challenge_id" value="{{ challenge.id }}">
+                        <input name="flag" placeholder="flag{...}" aria-label="플래그">
+                        <button type="submit">제출</button>
+                    </form>
+                    {% else %}
+                    <a class="login-notice" href="/login">로그인 후 제출</a>
+                    {% endif %}
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </section>
+
+    <aside class="side-stack">
+        <section class="side-card bounty-card">
+            <strong>운영 방식</strong>
+            <p>각 문제는 재현 가능한 취약점과 플래그를 갖습니다. 첫 해결자는 동일 점수를 받으며, 점수판에서 누적 순위를 확인합니다.</p>
+        </section>
+        <section class="side-card">
+            <h2>추천 시작점</h2>
+            <a class="quick-link" href="/posts?keyword=test"><span>검색</span><small>Injection/XSS</small></a>
+            <a class="quick-link" href="/upload"><span>자료실</span><small>업로드 검증</small></a>
+            <a class="quick-link" href="/debug/error"><span>디버그</span><small>정보 노출</small></a>
+        </section>
+    </aside>
+</div>
+{% endblock %}

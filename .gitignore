@@ -8,3 +8,6 @@ __pycache__/
 .ruff_cache/
 app/uploads/*
 !app/uploads/.gitkeep
+
+# OS
+.DS_Store

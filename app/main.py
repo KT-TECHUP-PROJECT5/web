@@ -1,13 +1,16 @@
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.config import get_settings
 from app.routers.admin import router as admin_router
+from app.routers.arena import router as arena_router
 from app.routers.auth import router as auth_router
 from app.routers.comments import router as comments_router
+from app.routers.cve import router as cve_router
 from app.routers.errors import router as errors_router
 from app.routers.posts import router as posts_router
 from app.routers.upload import router as upload_router
@@ -21,9 +24,17 @@ app = FastAPI(title=settings.app_name, version="1.0.0", debug=settings.debug)
 app.add_middleware(SessionMiddleware, secret_key=settings.session_secret, same_site="lax")
 app.mount("/static", StaticFiles(directory=BASE_DIR / "app" / "static"), name="static")
 
+
+@app.get("/")
+def root():
+    return RedirectResponse(url="/arena", status_code=303)
+
+
 app.include_router(auth_router)
+app.include_router(arena_router)
 app.include_router(posts_router)
 app.include_router(comments_router)
+app.include_router(cve_router)
 app.include_router(admin_router)
 app.include_router(errors_router)
 app.include_router(upload_router)

@@ -1,8 +1,9 @@
-# OWASP 실습용 게시판
+# OWASP 버그바운티 실습장
 
 ## 프로젝트 소개
-보안 진단 실습을 위해 FastAPI로 만든 작은 게시판입니다. 
-실습 항목별로 취약한 코드와 재현 경로를 일부러 남겨 두었습니다.
+보안 진단 실습을 위해 FastAPI로 만든 취약 웹앱입니다.
+게시판, 자료실, 관리자, 디버그 화면에 취약한 코드와 재현 경로를 일부러 남겨 두었고,
+`/arena`에서 챌린지형 플래그 제출과 점수판 경쟁을 진행할 수 있습니다.
 
 ## 교육 및 허가된 테스트 환경 전용 안내
 로컬 또는 허가된 테스트 환경에서만 사용합니다. 실제 서비스에 배포하지 마세요.
@@ -65,14 +66,17 @@ uvicorn app.main:app --reload --port 8001
 DB 상태는 `docker compose ps`로 확인합니다. `web-postgres-1`이 `healthy`이고
 포트가 `5433->5432`로 나오면 정상입니다.
 
-서버가 뜨면 `http://127.0.0.1:8000/posts`에서 시작하면 됩니다.
+서버가 뜨면 `http://127.0.0.1:8000/arena`에서 시작하면 됩니다.
 자동 생성된 API 문서는 `/docs`, `/redoc`에 남겨 두었습니다.
 
 주요 URL:
+- http://127.0.0.1:8000/arena
+- http://127.0.0.1:8000/arena/scoreboard
 - http://127.0.0.1:8000/register
 - http://127.0.0.1:8000/login
 - http://127.0.0.1:8000/posts
 - http://127.0.0.1:8000/upload
+- http://127.0.0.1:8000/cve
 - http://127.0.0.1:8000/admin/security-events
 - http://127.0.0.1:8000/debug/error
 - http://127.0.0.1:8000/docs
@@ -139,6 +143,12 @@ web/
 - 빈 보안 이벤트 화면 추가
 - 예외·DB 오류·내부 경로 노출 디버그 경로 추가
 
+### 5일차 - Bug Bounty Arena
+- OWASP Top 10 기반 챌린지 카탈로그 추가
+- 플래그 제출과 중복 제출 방지 추가
+- 참가자별 해결 수, 점수, 최근 해결 시각 기반 점수판 추가
+- 기존 취약 화면에 실습용 플래그 노출 루프 연결
+
 ## OWASP Top 10:2025 매핑
 A01:2025 Broken Access Control
 - 비공개 게시글 IDOR
@@ -153,6 +163,7 @@ A02:2025 Security Misconfiguration
 - 파일 크기 제한 없음
 
 A03:2025 Software Supply Chain Failures
+- `/cve`에서 requirements-legacy.txt 기준 취약 의존성 점검
 - requirements-legacy.txt를 이용한 예전 의존성 점검
 
 A05:2025 Injection
@@ -179,6 +190,12 @@ A10:2025 Mishandling of Exceptional Conditions
 - 내부 경로 노출
 
 ## PoC 시나리오
+### 버그바운티 훈련장
+1. `/arena`에서 챌린지를 선택합니다.
+2. 지정된 `target_path`에서 취약점을 재현하고 `flag{...}` 값을 찾습니다.
+3. 챌린지 카드의 제출 폼에 플래그를 입력합니다.
+4. `/arena/scoreboard`에서 점수와 순위를 확인합니다.
+
 ### 로그인 SQL Injection
 - username: ' OR '1'='1' --
 - password: 아무 값
@@ -240,5 +257,3 @@ trivy fs .
 본 프로젝트는 KT TechUp-Team304/broken_regist_backend의 문서화 방식과 취약점
 시나리오 구성을 참고했습니다. PostgreSQL은 동일하게 사용하고, NestJS의 모듈과
 TypeORM 엔티티는 FastAPI 라우터와 SQLAlchemy 모델로 대응시켰습니다.
-
-
