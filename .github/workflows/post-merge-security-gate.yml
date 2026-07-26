@@ -20,8 +20,9 @@ jobs:
       smoke_paths: /login=200,/posts=200,/upload=200|303,/docs=200,/redoc=200
       dynatrace_environment_url: ${{ vars.DYNATRACE_ENV_URL }}
       dynatrace_problem_selector: ${{ vars.DYNATRACE_PROBLEM_SELECTOR }}
-      dynatrace_entity_selector: ${{ vars.DYNATRACE_ENTITY_SELECTOR }}
-      dynatrace_service_entity_selector: ${{ vars.DYNATRACE_SERVICE_ENTITY_SELECTOR }}
+      # App-scoped selectors belong in the caller, not org-wide variables.
+      dynatrace_entity_selector: 'type("SERVICE"),entityName.equals("OWASP practice board DAST")'
+      dynatrace_service_entity_selector: 'type("SERVICE"),entityName.equals("OWASP practice board DAST")'
     secrets:
       DEPENDENCY_TRACK_URL: ${{ secrets.DEPENDENCY_TRACK_URL }}
       DEPENDENCY_TRACK_API_KEY: ${{ secrets.DEPENDENCY_TRACK_API_KEY }}
