@@ -1,0 +1,30 @@
+# Secure PR Gate caller — PR soft profile on the vulnerable FastAPI app.
+
+name: Secure PR Gate
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  security-events: write
+
+jobs:
+  secure-pr-gate:
+    uses: KT-TECHUP-PROJECT5/secure_gate/.github/workflows/pr-security-gate.yml@main
+    with:
+      gate_repository: KT-TECHUP-PROJECT5/secure_gate
+      gate_ref: main
+      enable_dast: true
+      install_command: python -m pip install -r requirements.txt
+      build_command: cp -n .env.example .env && docker compose up -d --wait postgres && alembic upgrade head && python -m app.seed
+      start_command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+      app_port: "8000"
+      health_path: /posts
+      dependency_track_upload_mode: never
