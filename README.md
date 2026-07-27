@@ -242,3 +242,4 @@ trivy fs .
 TypeORM 엔티티는 FastAPI 라우터와 SQLAlchemy 모델로 대응시켰습니다.
 
 
+## soft mode test
