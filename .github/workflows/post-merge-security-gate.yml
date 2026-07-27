@@ -11,10 +11,10 @@ permissions:
 
 jobs:
   post-merge-security-gate:
-    uses: KT-TECHUP-PROJECT5/secure_gate/.github/workflows/post-merge-security-gate.yml@codex/d-runtime-dynatrace
+    uses: KT-TECHUP-PROJECT5/secure_gate/.github/workflows/post-merge-security-gate.yml@main
     with:
       gate_repository: KT-TECHUP-PROJECT5/secure_gate
-      gate_ref: codex/d-runtime-dynatrace
+      gate_ref: main
       target_url: ${{ vars.STAGING_URL }}
       scan_path: /posts
       health_path: /posts

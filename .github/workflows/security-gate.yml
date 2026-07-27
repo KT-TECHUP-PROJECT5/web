@@ -17,10 +17,11 @@ permissions:
 
 jobs:
   secure-pr-gate:
-    uses: KT-TECHUP-PROJECT5/secure_gate/.github/workflows/pr-security-gate.yml@codex/d-runtime-dynatrace
+    uses: KT-TECHUP-PROJECT5/secure_gate/.github/workflows/pr-security-gate.yml@main
     with:
       gate_repository: KT-TECHUP-PROJECT5/secure_gate
-      gate_ref: codex/d-runtime-dynatrace
+      gate_ref: main
+      gate_profile: training
       enable_dast: true
       install_command: python -m pip install -r requirements.txt
       build_command: cp -n .env.example .env && docker compose up -d --wait postgres && alembic upgrade head && python -m app.seed
